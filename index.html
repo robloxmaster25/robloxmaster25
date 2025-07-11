@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Matematik Oyunu</title>
+  <meta name="description" content="Eğlenceli matematik soruları ile oyun oynayın.">
+  <meta name="robots" content="index, follow">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      margin-top: 50px;
+    }
+    .question {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .answers button {
+      font-size: 20px;
+      margin: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .score, .timer {
+      font-size: 20px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Matematik Bulmaca Oyunu</h1>
+  <div class="question" id="question">Soru yükleniyor...</div>
+  <div class="answers" id="answers"></div>
+  <div class="score">Puan: <span id="score">0</span></div>
+  <div class="timer">Kalan Süre: <span id="time">30</span> saniye</div>
+
+  <script>
+    let score = 0;
+    let timeLeft = 30;
+    const questionEl = document.getElementById('question');
+    const answersEl = document.getElementById('answers');
+    const scoreEl = document.getElementById('score');
+    const timeEl = document.getElementById('time');
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateQuestion() {
+      const a = getRandomInt(1, 10);
+      const b = getRandomInt(1, 10);
+      const isPlus = Math.random() > 0.5;
+      const correct = isPlus ? a + b : a * b;
+      const questionText = isPlus ? `${a} + ${b} = ?` : `${a} × ${b} = ?`;
+      questionEl.textContent = questionText;
+
+      const options = [correct];
+      while (options.length < 3) {
+        const wrong = correct + getRandomInt(-5, 5);
+        if (!options.includes(wrong) && wrong >= 0) {
+          options.push(wrong);
+        }
+      }
+
+      options.sort(() => Math.random() - 0.5);
+      answersEl.innerHTML = '';
+
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => {
+          if (opt === correct) {
+            score++;
+            scoreEl.textContent = score;
+          }
+          generateQuestion();
+        };
+        answersEl.appendChild(btn);
+      });
+    }
+
+    function startGame() {
+      generateQuestion();
+      const timer = setInterval(() => {
+        timeLeft--;
+        timeEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          questionEl.textContent = "Süre doldu! 🎉";
+          answersEl.innerHTML = "";
+        }
+      }, 1000);
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
